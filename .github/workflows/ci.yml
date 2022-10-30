@@ -1,0 +1,23 @@
+name: Falcon CI
+
+on: pull_request
+
+jobs:
+  build:
+  runs-on: ubuntu-latest
+  steps:
+  - uses: actions/checkout@v3
+
+  - uses: actions/setup-python@v4
+    with:
+      python-version: '3.9'
+      cache: 'pip' # caching pip dependencies
+  - run: pip install -r requirements.txt
+
+  - name: Docker Build and run
+    run: |
+      docker build . -t danielsoeiro/falcon-look-app
+      docker run -dit -p 8000:8000 danielsoeiro/falcon-look-app
+
+  - name: Test Code
+    run: coverage run -m pytest tests/
